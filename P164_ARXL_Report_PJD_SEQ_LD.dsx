@@ -1,0 +1,1841 @@
+BEGIN HEADER
+   CharacterSet "CP1252"
+   ExportingTool "IBM InfoSphere DataStage Export"
+   ToolVersion "8"
+   ServerName "EGVD1L1DSG03.SXC.COM"
+   ToolInstanceID "whs_pbm_billing_payment_dev_rec1"
+   MDISVersion "1.0"
+   Date "2018-10-24"
+   Time "09.36.09"
+   ServerVersion "11.5"
+END HEADER
+BEGIN DSJOB
+   Identifier "P164_ARXL_Report_PJD_SEQ_LD"
+   DateModified "2018-10-24"
+   TimeModified "05.39.16"
+   BEGIN DSRECORD
+      Identifier "ROOT"
+      OLEType "CJobDefn"
+      Readonly "0"
+      Name "P164_ARXL_Report_PJD_SEQ_LD"
+      NextID "26"
+      Container "V0"
+      JobVersion "56.0.0"
+      JobControlCode =+=+=+=
+* Tokens were replaced below as follows:
+* IdV25S0%%UserVar%%0 <= UserVariables_Activity_Sysdate.Current_date
+* IdV0S0%%Result2%%1 <= P164_ARXL_Report_PJD_EXTR.$UserStatus
+* IdV0S0%%Result1%%2 <= P164_ARXL_Report_PJD_EXTR.$JobStatus
+* IdV0S0%%Name%%3 <= P164_ARXL_Report_PJD_EXTR.$JobName
+* IdV0S3%%Result2%%4 <= P164_ARXL_Report_CreateDataSet_PJD_LD.$UserStatus
+* IdV0S3%%Result1%%5 <= P164_ARXL_Report_CreateDataSet_PJD_LD.$JobStatus
+* IdV0S3%%Name%%6 <= P164_ARXL_Report_CreateDataSet_PJD_LD.$JobName
+* IdV0S6%%Result2%%7 <= P164_ARXL_Report_PJD_LD.$UserStatus
+* IdV0S6%%Result1%%8 <= P164_ARXL_Report_PJD_LD.$JobStatus
+* IdV0S6%%Name%%9 <= P164_ARXL_Report_PJD_LD.$JobName
+* IdV23S2%%Result1%%10 <= file_post_split_activities.$ReturnValue
+* IdV23S2%%Name%%11 <= file_post_split_activities.$CommandName
+* IdV23S2%%Result2%%12 <= file_post_split_activities.$CommandOutput
+* IdV23S4%%Result2%%13 <= P164_ARXL_Report_PJD_Recon.$UserStatus
+* IdV23S4%%Result1%%14 <= P164_ARXL_Report_PJD_Recon.$JobStatus
+* IdV23S4%%Name%%15 <= P164_ARXL_Report_PJD_Recon.$JobName
+* IdV0S67%%Result2%%16 <= P164_ARXL_Report_CreateDataSet_PJD_LD2.$UserStatus
+* IdV0S67%%Result1%%17 <= P164_ARXL_Report_CreateDataSet_PJD_LD2.$JobStatus
+* IdV0S67%%Name%%18 <= P164_ARXL_Report_CreateDataSet_PJD_LD2.$JobName
+* IdV0S74%%Result1%%19 <= Exec_files_split_Arxl.$ReturnValue
+* IdV0S74%%Name%%20 <= Exec_files_split_Arxl.$CommandName
+* IdV0S74%%Result2%%21 <= Exec_files_split_Arxl.$CommandOutput
+* IdV0S75%%Result1%%22 <= Exec_files_split_Arxlp.$ReturnValue
+* IdV0S75%%Name%%23 <= Exec_files_split_Arxlp.$CommandName
+* IdV0S75%%Result2%%24 <= Exec_files_split_Arxlp.$CommandOutput
+* IdV0S76%%Result1%%25 <= Exec_files_split_Arxld.$ReturnValue
+* IdV0S76%%Name%%26 <= Exec_files_split_Arxld.$CommandName
+* IdV0S76%%Result2%%27 <= Exec_files_split_Arxld.$CommandOutput
+*
+*** [Generated at 2018-10-24 05:39:16 - 11.5.0.0]
+   $INCLUDE DSINCLUDE DSJ_XFUNCS.H
+   EQU Time$$ Lit "Oconv(Time(), 'MTS:'):': '"
+****************************************
+* Graphical Sequencer generated code for Job P164_ARXL_Report_PJD_SEQ_LD
+****************************************
+   
+   seq$V20S0$count = 0
+   seq$V20S0$status = 0
+   seq$V0S69$count = 0
+   seq$V0S69$status = 0
+   seq$V0S79$count = 0
+   seq$V0S79$status = 0
+   seq$V0S96$count = 0
+   seq$V0S96$status = 0
+   handle$list = ""
+   id$list = ""
+   abort$list = ""
+   b$Abandoning = @False
+   b$CPRestarted = @False
+   b$InErrorRef = @False
+   summary$restarting = @False
+*** Create new checkpoint for sequence if not restarting
+   If DSCheckPointExists(DSJ.ME, cp$dtm) Then GoTo L$RESTART
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0015\\Starting new run of checkpointed Sequence job", ""), "@Coordinator")
+   If (Not(DSCheckPointValidate(DSJ.ME, cp$msg))) Then
+      err$source = "@Coordinator"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0016\\Error creating checkpoint record<L>%1", cp$msg)
+      msg$id = "@Coordinator"; GoTo L$ERROR
+   End
+   GoTo L$MAINSTART
+L$RESTART:
+*** Validate restarted job matches prior state
+   summary$restarting = @True
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0017\\Sequence job is being restarted after failure<L>Checkpoint record last modified at %1", cp$dtm), "@Coordinator")
+   b$CPRestarted = @True
+   If Not(DSCheckPointValidate(DSJ.ME, cp$msg)) Then
+      Call DSLogWarn(cp$msg, "@Coordinator")
+   End
+L$MAINSTART:
+*** Sequence start point
+   summary$ = DSMakeMsg("DSTAGE_JSG_M_0048\\Summary of sequence run", "")
+   If summary$restarting Then
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0049\\Sequence restarted after failure", ""))
+   End Else
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0050\\Sequence started (checkpointing on)", ""))
+   End
+   GoTo L$V0S0$START
+L$RETURN$1:
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S0$START:
+*** Activity "P164_ARXL_Report_PJD_EXTR": Initialize job
+   b$InErrorRef$V0S0 = b$InErrorRef
+   h$V0S0 = DSAttachJob("P164_ARXL_Report_PJD_EXTR", DSJ.ERRNONE)
+   If (Not(h$V0S0)) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", "P164_ARXL_Report_PJD_EXTR":@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+   If DSGetJobInfo(h$V0S0, DSJ.JOBMULTIINVOKABLE) Then
+      jb$V0S0 = "P164_ARXL_Report_PJD_EXTR":'.':"P164_ARXL_Report_PJD_EXTR"
+   End Else
+      jb$V0S0 = "P164_ARXL_Report_PJD_EXTR"
+   End
+   dummy$ = DSDetachJob(h$V0S0)
+   b$V0S0skipping = @False
+   h$V0S0$cp = "h$V0S0"
+   If DSCheckPointGetValue(DSJ.ME, h$V0S0$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0021\\Skipped run of job '%1' on restart", jb$V0S0), "@P164_ARXL_Report_PJD_EXTR")
+      job$V0S0$status = Raise(cp$value<1>)
+      job$V0S0$userstatus = Raise(cp$value<2>)
+      IdV0S0%%Result2%%1 = job$V0S0$userstatus
+      IdV0S0%%Result1%%2 = job$V0S0$status
+      IdV0S0%%Name%%3 = jb$V0S0
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0060\\%1 (JOB %2) skipped", "P164_ARXL_Report_PJD_EXTR":@FM:jb$V0S0))
+      b$V0S0skipping = @True
+      Goto L$V0S0$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0057\\%1 (JOB %2) started", "P164_ARXL_Report_PJD_EXTR":@FM:jb$V0S0))
+   h$V0S0 = DSAttachJob(jb$V0S0, DSJ.ERRNONE)
+   If (Not(h$V0S0)) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", jb$V0S0:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+   h$V0S0 = DSPrepareJob(h$V0S0)
+   If (Not(h$V0S0)) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0012\\Error calling DSPrepareJob(%1)<L>%2", jb$V0S0:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+L$V0S0$PREPARED:
+   p$V0S0$1 = "(As pre-defined)"
+   err$code = DSSetParam(h$V0S0, "PBM_BNP_GLOBAL", p$V0S0$1)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_GLOBAL":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+   p$V0S0$22 = (pJOB_STATUS_ID)
+   err$code = DSSetParam(h$V0S0, "pJOB_STATUS_ID", p$V0S0$22)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "pJOB_STATUS_ID":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+   p$V0S0$23 = (pBATCH_NBR)
+   err$code = DSSetParam(h$V0S0, "pBATCH_NBR", p$V0S0$23)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "pBATCH_NBR":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+   p$V0S0$24 = (pLAST_RUN_DT)
+   err$code = DSSetParam(h$V0S0, "pLAST_RUN_DT", p$V0S0$24)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "pLAST_RUN_DT":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+   err$code = DSRunJob(h$V0S0, DSJ.RUNNORMAL)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_EXTR"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0003\\Error calling DSRunJob(%1), code=%2[E]", jb$V0S0:@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_EXTR"; GoTo L$ERROR
+   End
+   handle$list<-1> = h$V0S0
+   id$list<-1> = "V0S0"
+   GoTo L$RETURN$1
+**************************************************
+L$V0S0$FINISHED:
+   job$V0S0$status = DSGetJobInfo(h$V0S0, DSJ.JOBSTATUS)
+   job$V0S0$userstatus = DSGetJobInfo(h$V0S0, DSJ.USERSTATUS)
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0063\\%1 (JOB %2) finished, status=%3[E]", "P164_ARXL_Report_PJD_EXTR":@FM:jb$V0S0:@FM:job$V0S0$status))
+   IdV0S0%%Result2%%1 = job$V0S0$userstatus
+   IdV0S0%%Result1%%2 = job$V0S0$status
+   IdV0S0%%Name%%3 = jb$V0S0
+   If (job$V0S0$status <> DSJS.RUNOK) Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0030\\Job %1 did not finish OK, status = '%2'", jb$V0S0:@FM:DSTranslateCode(job$V0S0$status)), "@P164_ARXL_Report_PJD_EXTR")
+   End
+   rpt$V0S0 = DSMakeJobReport(h$V0S0, 1, "CRLF")
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0004\\Report on job: %1<L>%2", jb$V0S0:@FM:rpt$V0S0), "@P164_ARXL_Report_PJD_EXTR")
+   dummy$ = DSDetachJob(h$V0S0)
+   If b$InErrorRef$V0S0 Or (job$V0S0$status <> DSJS.RUNOK And job$V0S0$status <> DSJS.RUNWARN) Then Goto L$V0S0$SKIPPED
+   cp$value = Lower(job$V0S0$status)
+   cp$value<2> = Lower(job$V0S0$userstatus)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, h$V0S0$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0025\\Checkpointed run of job '%1'", jb$V0S0), "@P164_ARXL_Report_PJD_EXTR")
+**************************************************
+L$V0S0$SKIPPED:
+   If b$Abandoning Then GoTo L$WAITFORJOB
+   If (IdV0S0%%Result1%%2=1 OR IdV0S0%%Result1%%2=2) Then GoTo L$V0S67$START
+L$V0S0$RETURN$1:
+   If (job$V0S0$status <> DSJS.RUNOK And job$V0S0$status <> DSJS.RUNWARN) Then GoSub L$V20S0$START
+   If (IdV0S0%%Result1%%2=1 OR IdV0S0%%Result1%%2=2) Then GoTo L$V0S3$START
+L$V0S0$RETURN$3:
+   If b$V0S0skipping Then GoTo L$RETURN$1
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S3$START:
+*** Activity "P164_ARXL_Report_CreateDataSet_PJD_LD": Initialize job
+   b$InErrorRef$V0S3 = b$InErrorRef
+   h$V0S3 = DSAttachJob("P164_ARXL_Report_CreateDataSet_PJD_LD", DSJ.ERRNONE)
+   If (Not(h$V0S3)) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", "P164_ARXL_Report_CreateDataSet_PJD_LD":@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD"; GoTo L$ERROR
+   End
+   If DSGetJobInfo(h$V0S3, DSJ.JOBMULTIINVOKABLE) Then
+      jb$V0S3 = "P164_ARXL_Report_CreateDataSet_PJD_LD":'.':"P164_ARXL_Report_CreateDataSet_PJD_LD"
+   End Else
+      jb$V0S3 = "P164_ARXL_Report_CreateDataSet_PJD_LD"
+   End
+   dummy$ = DSDetachJob(h$V0S3)
+   b$V0S3skipping = @False
+   h$V0S3$cp = "h$V0S3"
+   If DSCheckPointGetValue(DSJ.ME, h$V0S3$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0021\\Skipped run of job '%1' on restart", jb$V0S3), "@P164_ARXL_Report_CreateDataSet_PJD_LD")
+      job$V0S3$status = Raise(cp$value<1>)
+      job$V0S3$userstatus = Raise(cp$value<2>)
+      IdV0S3%%Result2%%4 = job$V0S3$userstatus
+      IdV0S3%%Result1%%5 = job$V0S3$status
+      IdV0S3%%Name%%6 = jb$V0S3
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0060\\%1 (JOB %2) skipped", "P164_ARXL_Report_CreateDataSet_PJD_LD":@FM:jb$V0S3))
+      b$V0S3skipping = @True
+      Goto L$V0S3$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0057\\%1 (JOB %2) started", "P164_ARXL_Report_CreateDataSet_PJD_LD":@FM:jb$V0S3))
+   h$V0S3 = DSAttachJob(jb$V0S3, DSJ.ERRNONE)
+   If (Not(h$V0S3)) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", jb$V0S3:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD"; GoTo L$ERROR
+   End
+   h$V0S3 = DSPrepareJob(h$V0S3)
+   If (Not(h$V0S3)) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0012\\Error calling DSPrepareJob(%1)<L>%2", jb$V0S3:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD"; GoTo L$ERROR
+   End
+L$V0S3$PREPARED:
+   p$V0S3$1 = "(As pre-defined)"
+   err$code = DSSetParam(h$V0S3, "PBM_BNP_GLOBAL", p$V0S3$1)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_GLOBAL":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD"; GoTo L$ERROR
+   End
+   p$V0S3$22 = "(As pre-defined)"
+   err$code = DSSetParam(h$V0S3, "PBM_BNP_DAILY", p$V0S3$22)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_DAILY":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD"; GoTo L$ERROR
+   End
+   err$code = DSRunJob(h$V0S3, DSJ.RUNNORMAL)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0003\\Error calling DSRunJob(%1), code=%2[E]", jb$V0S3:@FM:err$code)
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD"; GoTo L$ERROR
+   End
+   handle$list<-1> = h$V0S3
+   id$list<-1> = "V0S3"
+   GoTo L$V0S0$RETURN$3
+**************************************************
+L$V0S3$FINISHED:
+   job$V0S3$status = DSGetJobInfo(h$V0S3, DSJ.JOBSTATUS)
+   job$V0S3$userstatus = DSGetJobInfo(h$V0S3, DSJ.USERSTATUS)
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0063\\%1 (JOB %2) finished, status=%3[E]", "P164_ARXL_Report_CreateDataSet_PJD_LD":@FM:jb$V0S3:@FM:job$V0S3$status))
+   IdV0S3%%Result2%%4 = job$V0S3$userstatus
+   IdV0S3%%Result1%%5 = job$V0S3$status
+   IdV0S3%%Name%%6 = jb$V0S3
+   If (job$V0S3$status <> DSJS.RUNOK) Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0030\\Job %1 did not finish OK, status = '%2'", jb$V0S3:@FM:DSTranslateCode(job$V0S3$status)), "@P164_ARXL_Report_CreateDataSet_PJD_LD")
+   End
+   rpt$V0S3 = DSMakeJobReport(h$V0S3, 1, "CRLF")
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0004\\Report on job: %1<L>%2", jb$V0S3:@FM:rpt$V0S3), "@P164_ARXL_Report_CreateDataSet_PJD_LD")
+   dummy$ = DSDetachJob(h$V0S3)
+   If b$InErrorRef$V0S3 Or (job$V0S3$status <> DSJS.RUNOK And job$V0S3$status <> DSJS.RUNWARN) Then Goto L$V0S3$SKIPPED
+   cp$value = Lower(job$V0S3$status)
+   cp$value<2> = Lower(job$V0S3$userstatus)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, h$V0S3$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0025\\Checkpointed run of job '%1'", jb$V0S3), "@P164_ARXL_Report_CreateDataSet_PJD_LD")
+**************************************************
+L$V0S3$SKIPPED:
+   If b$Abandoning Then GoTo L$WAITFORJOB
+   If (IdV0S3%%Result1%%5=1 OR IdV0S3%%Result1%%5=2) Then GoSub L$V0S69$START
+   If (job$V0S3$status <> DSJS.RUNOK And job$V0S3$status <> DSJS.RUNWARN) Then GoSub L$V20S0$START
+   If b$V0S3skipping Then GoTo L$V0S0$RETURN$3
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S6$START:
+*** Activity "P164_ARXL_Report_PJD_LD": Initialize job
+   b$InErrorRef$V0S6 = b$InErrorRef
+   h$V0S6 = DSAttachJob("P164_ARXL_Report_PJD_LD", DSJ.ERRNONE)
+   If (Not(h$V0S6)) Then
+      err$source = "P164_ARXL_Report_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", "P164_ARXL_Report_PJD_LD":@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_LD"; GoTo L$ERROR
+   End
+   If DSGetJobInfo(h$V0S6, DSJ.JOBMULTIINVOKABLE) Then
+      jb$V0S6 = "P164_ARXL_Report_PJD_LD":'.':"P164_ARXL_Report_PJD_LD"
+   End Else
+      jb$V0S6 = "P164_ARXL_Report_PJD_LD"
+   End
+   dummy$ = DSDetachJob(h$V0S6)
+   b$V0S6skipping = @False
+   h$V0S6$cp = "h$V0S6"
+   If DSCheckPointGetValue(DSJ.ME, h$V0S6$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0021\\Skipped run of job '%1' on restart", jb$V0S6), "@P164_ARXL_Report_PJD_LD")
+      job$V0S6$status = Raise(cp$value<1>)
+      job$V0S6$userstatus = Raise(cp$value<2>)
+      IdV0S6%%Result2%%7 = job$V0S6$userstatus
+      IdV0S6%%Result1%%8 = job$V0S6$status
+      IdV0S6%%Name%%9 = jb$V0S6
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0060\\%1 (JOB %2) skipped", "P164_ARXL_Report_PJD_LD":@FM:jb$V0S6))
+      b$V0S6skipping = @True
+      Goto L$V0S6$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0057\\%1 (JOB %2) started", "P164_ARXL_Report_PJD_LD":@FM:jb$V0S6))
+   h$V0S6 = DSAttachJob(jb$V0S6, DSJ.ERRNONE)
+   If (Not(h$V0S6)) Then
+      err$source = "P164_ARXL_Report_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", jb$V0S6:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_LD"; GoTo L$ERROR
+   End
+   h$V0S6 = DSPrepareJob(h$V0S6)
+   If (Not(h$V0S6)) Then
+      err$source = "P164_ARXL_Report_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0012\\Error calling DSPrepareJob(%1)<L>%2", jb$V0S6:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_LD"; GoTo L$ERROR
+   End
+L$V0S6$PREPARED:
+   p$V0S6$1 = "(As pre-defined)"
+   err$code = DSSetParam(h$V0S6, "PBM_BNP_GLOBAL", p$V0S6$1)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_GLOBAL":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_LD"; GoTo L$ERROR
+   End
+   p$V0S6$22 = "(As pre-defined)"
+   err$code = DSSetParam(h$V0S6, "PBM_BNP_DAILY", p$V0S6$22)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_DAILY":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_LD"; GoTo L$ERROR
+   End
+   p$V0S6$359 = (DSJobStartDate[1, 4] : DSJobStartDate[6, 2] : DSJobStartDate[9, 2] : DSJobStartTime[1, 2] : DSJobStartTime[4, 2] : DSJobStartTime[7, 2])
+   err$code = DSSetParam(h$V0S6, "cttym", p$V0S6$359)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "cttym":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_LD"; GoTo L$ERROR
+   End
+   err$code = DSRunJob(h$V0S6, DSJ.RUNNORMAL)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_LD"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0003\\Error calling DSRunJob(%1), code=%2[E]", jb$V0S6:@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_LD"; GoTo L$ERROR
+   End
+   handle$list<-1> = h$V0S6
+   id$list<-1> = "V0S6"
+   GoTo L$V0S69$RETURN$1
+**************************************************
+L$V0S6$FINISHED:
+   job$V0S6$status = DSGetJobInfo(h$V0S6, DSJ.JOBSTATUS)
+   job$V0S6$userstatus = DSGetJobInfo(h$V0S6, DSJ.USERSTATUS)
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0063\\%1 (JOB %2) finished, status=%3[E]", "P164_ARXL_Report_PJD_LD":@FM:jb$V0S6:@FM:job$V0S6$status))
+   IdV0S6%%Result2%%7 = job$V0S6$userstatus
+   IdV0S6%%Result1%%8 = job$V0S6$status
+   IdV0S6%%Name%%9 = jb$V0S6
+   If (job$V0S6$status <> DSJS.RUNOK) Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0030\\Job %1 did not finish OK, status = '%2'", jb$V0S6:@FM:DSTranslateCode(job$V0S6$status)), "@P164_ARXL_Report_PJD_LD")
+   End
+   rpt$V0S6 = DSMakeJobReport(h$V0S6, 1, "CRLF")
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0004\\Report on job: %1<L>%2", jb$V0S6:@FM:rpt$V0S6), "@P164_ARXL_Report_PJD_LD")
+   dummy$ = DSDetachJob(h$V0S6)
+   If b$InErrorRef$V0S6 Or (job$V0S6$status <> DSJS.RUNOK And job$V0S6$status <> DSJS.RUNWARN) Then Goto L$V0S6$SKIPPED
+   cp$value = Lower(job$V0S6$status)
+   cp$value<2> = Lower(job$V0S6$userstatus)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, h$V0S6$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0025\\Checkpointed run of job '%1'", jb$V0S6), "@P164_ARXL_Report_PJD_LD")
+**************************************************
+L$V0S6$SKIPPED:
+   If b$Abandoning Then GoTo L$WAITFORJOB
+   If (IdV0S6%%Result1%%8=1 Or IdV0S6%%Result1%%8=2) Then GoTo L$V25S0$START
+L$V0S6$RETURN$1:
+   If (job$V0S6$status <> DSJS.RUNOK And job$V0S6$status <> DSJS.RUNWARN) Then GoSub L$V20S0$START
+   If b$V0S6skipping Then GoTo L$V0S69$RETURN$1
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S21$START:
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0065\\%1 Executed", "Terminate_Activity"))
+* Send stop request to any outstanding child jobs
+   For index$ = 1 To DCount(handle$list, @FM)
+      handle$ = handle$list<index$>
+      If handle$ <> "" Then
+         job$name = DSGetJobInfo(handle$, DSJ.JOBNAME)
+         job$invid = DSGetJobInfo(handle$, DSJ.JOBINVOCATIONID)
+         if job$invid <> "" Then job$name = job$name:".":job$invid
+         Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0019\\Sending STOP request to job: %1", job$name), "@Terminate_Activity")
+         dummy$ = DSStopJob(handle$)
+      End
+   Next index$
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0069\\Sequence terminated", ""))
+   x$masked$summary = summary$
+   Call DSMaskExecArgs(x$masked$summary, '')
+   Call DSLogInfo(x$masked$summary, "@Coordinator")
+   Call DSLogFatal(DSMakeMsg("DSTAGE_JSG_M_0020\\Sequence abort requested", ""), "@Terminate_Activity")
+**************************************************
+L$V20S0$START:
+*** Sequencer "SEQ_Failure": wait until inputs ready
+   seq$V20S0$status = 1
+   If seq$V20S0$count > 0 Then Return
+   seq$V20S0$count += 1
+   seq$V20S0$status = 2
+   GoTo L$V0S21$START
+L$V20S0$RETURN$1:
+   Return
+**************************************************
+L$V23S2$START:
+*** Activity "file_post_split_activities": Execute command
+   x$V23S2$cp = "x$V23S2"
+   If DSCheckPointGetValue(DSJ.ME, x$V23S2$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0023\\Skipped execution of command '%1' on restart", "sh "), "@file_post_split_activities")
+      x$V23S2 = Raise(cp$value<1>)
+      x$V23S2$output = Raise(cp$value<2>)
+      IdV23S2%%Result1%%10 = x$V23S2
+      IdV23S2%%Name%%11 = "sh "
+      IdV23S2%%Result2%%12 = x$V23S2$output
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0062\\%1 (COMMAND %2) skipped", "file_post_split_activities":@FM:"sh "))
+      Goto L$V23S2$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0059\\%1 (COMMAND %2) started", "file_post_split_activities":@FM:"sh "))
+   p$V23S2$1 = (PBM_BNP_GLOBAL.$pSCRIPT_DIR:"bnp_ARXL_post_split_activities.sh ":IdV25S0%%UserVar%%0)
+   x$cmd = "sh ":" ":p$V23S2$1
+   x$type = (If System(91) = 1 Then "NT" Else "UNIX")
+   Call DSExecute(x$type, x$cmd, x$V23S2$output, x$V23S2)
+   x$masked$cmd = x$cmd
+   x$masked$output = x$V23S2$output
+   Call DSMaskExecArgs(x$masked$cmd, x$masked$output)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0007\\Executed: %1<L>Reply=%2<L>Output from command ====><L>%3", x$masked$cmd:@FM:x$V23S2:@FM:Lower(x$masked$output)), "@file_post_split_activities")
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0064\\%1 finished, reply=%2", "file_post_split_activities":@FM:x$V23S2))
+   IdV23S2%%Result1%%10 = x$V23S2
+   IdV23S2%%Name%%11 = "sh "
+   IdV23S2%%Result2%%12 = x$V23S2$output
+   If x$V23S2 <> 0 Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0043\\Command %1 did not finish OK, reply = '%2'", "sh ":@FM:x$V23S2), "@file_post_split_activities")
+   End
+   If b$InErrorRef Or (x$V23S2 <> 0) Then Goto L$V23S2$SKIPPED
+   cp$value = Lower(x$V23S2)
+   cp$value<2> = Lower(x$V23S2$output)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, x$V23S2$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0027\\Checkpointed execution of command '%1'", "sh "), "@file_post_split_activities")
+**************************************************
+L$V23S2$SKIPPED:
+   If (x$V23S2 <> 0) Then GoSub L$V20S0$START
+   GoTo L$V0S79$RETURN$1
+**************************************************
+L$V23S4$START:
+*** Activity "P164_ARXL_Report_PJD_Recon": Initialize job
+   b$InErrorRef$V23S4 = b$InErrorRef
+   h$V23S4 = DSAttachJob("P164_ARXL_Report_PJD_Recon", DSJ.ERRNONE)
+   If (Not(h$V23S4)) Then
+      err$source = "P164_ARXL_Report_PJD_Recon"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", "P164_ARXL_Report_PJD_Recon":@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_Recon"; GoTo L$ERROR
+   End
+   If DSGetJobInfo(h$V23S4, DSJ.JOBMULTIINVOKABLE) Then
+      jb$V23S4 = "P164_ARXL_Report_PJD_Recon":'.':"P164_ARXL_Report_PJD_Recon"
+   End Else
+      jb$V23S4 = "P164_ARXL_Report_PJD_Recon"
+   End
+   dummy$ = DSDetachJob(h$V23S4)
+   b$V23S4skipping = @False
+   h$V23S4$cp = "h$V23S4"
+   If DSCheckPointGetValue(DSJ.ME, h$V23S4$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0021\\Skipped run of job '%1' on restart", jb$V23S4), "@P164_ARXL_Report_PJD_Recon")
+      job$V23S4$status = Raise(cp$value<1>)
+      job$V23S4$userstatus = Raise(cp$value<2>)
+      IdV23S4%%Result2%%13 = job$V23S4$userstatus
+      IdV23S4%%Result1%%14 = job$V23S4$status
+      IdV23S4%%Name%%15 = jb$V23S4
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0060\\%1 (JOB %2) skipped", "P164_ARXL_Report_PJD_Recon":@FM:jb$V23S4))
+      b$V23S4skipping = @True
+      Goto L$V23S4$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0057\\%1 (JOB %2) started", "P164_ARXL_Report_PJD_Recon":@FM:jb$V23S4))
+   h$V23S4 = DSAttachJob(jb$V23S4, DSJ.ERRNONE)
+   If (Not(h$V23S4)) Then
+      err$source = "P164_ARXL_Report_PJD_Recon"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", jb$V23S4:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_Recon"; GoTo L$ERROR
+   End
+   h$V23S4 = DSPrepareJob(h$V23S4)
+   If (Not(h$V23S4)) Then
+      err$source = "P164_ARXL_Report_PJD_Recon"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0012\\Error calling DSPrepareJob(%1)<L>%2", jb$V23S4:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_PJD_Recon"; GoTo L$ERROR
+   End
+L$V23S4$PREPARED:
+   p$V23S4$1 = "(As pre-defined)"
+   err$code = DSSetParam(h$V23S4, "PBM_BNP_GLOBAL", p$V23S4$1)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_Recon"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_GLOBAL":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_Recon"; GoTo L$ERROR
+   End
+   p$V23S4$22 = "(As pre-defined)"
+   err$code = DSSetParam(h$V23S4, "PBM_BNP_DAILY", p$V23S4$22)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_Recon"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_DAILY":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_Recon"; GoTo L$ERROR
+   End
+   p$V23S4$359 = (DSJobStartDate[1, 4] : DSJobStartDate[6, 2] : DSJobStartDate[9, 2] : DSJobStartTime[1, 2] : DSJobStartTime[4, 2] : DSJobStartTime[7, 2])
+   err$code = DSSetParam(h$V23S4, "cttym", p$V23S4$359)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_Recon"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "cttym":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_Recon"; GoTo L$ERROR
+   End
+   err$code = DSRunJob(h$V23S4, DSJ.RUNNORMAL)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_PJD_Recon"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0003\\Error calling DSRunJob(%1), code=%2[E]", jb$V23S4:@FM:err$code)
+      msg$id = "@P164_ARXL_Report_PJD_Recon"; GoTo L$ERROR
+   End
+   handle$list<-1> = h$V23S4
+   id$list<-1> = "V23S4"
+   GoTo L$V0S96$RETURN$1
+**************************************************
+L$V23S4$FINISHED:
+   job$V23S4$status = DSGetJobInfo(h$V23S4, DSJ.JOBSTATUS)
+   job$V23S4$userstatus = DSGetJobInfo(h$V23S4, DSJ.USERSTATUS)
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0063\\%1 (JOB %2) finished, status=%3[E]", "P164_ARXL_Report_PJD_Recon":@FM:jb$V23S4:@FM:job$V23S4$status))
+   IdV23S4%%Result2%%13 = job$V23S4$userstatus
+   IdV23S4%%Result1%%14 = job$V23S4$status
+   IdV23S4%%Name%%15 = jb$V23S4
+   If (job$V23S4$status <> DSJS.RUNOK) Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0030\\Job %1 did not finish OK, status = '%2'", jb$V23S4:@FM:DSTranslateCode(job$V23S4$status)), "@P164_ARXL_Report_PJD_Recon")
+   End
+   rpt$V23S4 = DSMakeJobReport(h$V23S4, 1, "CRLF")
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0004\\Report on job: %1<L>%2", jb$V23S4:@FM:rpt$V23S4), "@P164_ARXL_Report_PJD_Recon")
+   dummy$ = DSDetachJob(h$V23S4)
+   If b$InErrorRef$V23S4 Or (job$V23S4$status <> DSJS.RUNOK And job$V23S4$status <> DSJS.RUNWARN) Then Goto L$V23S4$SKIPPED
+   cp$value = Lower(job$V23S4$status)
+   cp$value<2> = Lower(job$V23S4$userstatus)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, h$V23S4$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0025\\Checkpointed run of job '%1'", jb$V23S4), "@P164_ARXL_Report_PJD_Recon")
+**************************************************
+L$V23S4$SKIPPED:
+   If b$Abandoning Then GoTo L$WAITFORJOB
+   If (job$V23S4$status <> DSJS.RUNOK And job$V23S4$status <> DSJS.RUNWARN) Then GoSub L$V20S0$START
+   If b$V23S4skipping Then GoTo L$V0S96$RETURN$1
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S67$START:
+*** Activity "P164_ARXL_Report_CreateDataSet_PJD_LD2": Initialize job
+   b$InErrorRef$V0S67 = b$InErrorRef
+   h$V0S67 = DSAttachJob("P164_ARXL_Report_CreateDataSet_PJD_LD2", DSJ.ERRNONE)
+   If (Not(h$V0S67)) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD2"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", "P164_ARXL_Report_CreateDataSet_PJD_LD2":@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD2"; GoTo L$ERROR
+   End
+   If DSGetJobInfo(h$V0S67, DSJ.JOBMULTIINVOKABLE) Then
+      jb$V0S67 = "P164_ARXL_Report_CreateDataSet_PJD_LD2":'.':"P164_ARXL_Report_CreateDataSet_PJD_LD2"
+   End Else
+      jb$V0S67 = "P164_ARXL_Report_CreateDataSet_PJD_LD2"
+   End
+   dummy$ = DSDetachJob(h$V0S67)
+   b$V0S67skipping = @False
+   h$V0S67$cp = "h$V0S67"
+   If DSCheckPointGetValue(DSJ.ME, h$V0S67$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0021\\Skipped run of job '%1' on restart", jb$V0S67), "@P164_ARXL_Report_CreateDataSet_PJD_LD2")
+      job$V0S67$status = Raise(cp$value<1>)
+      job$V0S67$userstatus = Raise(cp$value<2>)
+      IdV0S67%%Result2%%16 = job$V0S67$userstatus
+      IdV0S67%%Result1%%17 = job$V0S67$status
+      IdV0S67%%Name%%18 = jb$V0S67
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0060\\%1 (JOB %2) skipped", "P164_ARXL_Report_CreateDataSet_PJD_LD2":@FM:jb$V0S67))
+      b$V0S67skipping = @True
+      Goto L$V0S67$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0057\\%1 (JOB %2) started", "P164_ARXL_Report_CreateDataSet_PJD_LD2":@FM:jb$V0S67))
+   h$V0S67 = DSAttachJob(jb$V0S67, DSJ.ERRNONE)
+   If (Not(h$V0S67)) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD2"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0001\\Error calling DSAttachJob(%1)<L>%2", jb$V0S67:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD2"; GoTo L$ERROR
+   End
+   h$V0S67 = DSPrepareJob(h$V0S67)
+   If (Not(h$V0S67)) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD2"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0012\\Error calling DSPrepareJob(%1)<L>%2", jb$V0S67:@FM:DSGetLastErrorMsg())
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD2"; GoTo L$ERROR
+   End
+L$V0S67$PREPARED:
+   p$V0S67$1 = "(As pre-defined)"
+   err$code = DSSetParam(h$V0S67, "PBM_BNP_GLOBAL", p$V0S67$1)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD2"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_GLOBAL":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD2"; GoTo L$ERROR
+   End
+   p$V0S67$22 = "(As pre-defined)"
+   err$code = DSSetParam(h$V0S67, "PBM_BNP_DAILY", p$V0S67$22)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD2"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0002\\Error calling DSSetParam(%1), code=%2[E]", "PBM_BNP_DAILY":@FM:err$code)
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD2"; GoTo L$ERROR
+   End
+   err$code = DSRunJob(h$V0S67, DSJ.RUNNORMAL)
+   If (err$code <> DSJE.NOERROR) Then
+      err$source = "P164_ARXL_Report_CreateDataSet_PJD_LD2"; err$number = -1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0003\\Error calling DSRunJob(%1), code=%2[E]", jb$V0S67:@FM:err$code)
+      msg$id = "@P164_ARXL_Report_CreateDataSet_PJD_LD2"; GoTo L$ERROR
+   End
+   handle$list<-1> = h$V0S67
+   id$list<-1> = "V0S67"
+   GoTo L$V0S0$RETURN$1
+**************************************************
+L$V0S67$FINISHED:
+   job$V0S67$status = DSGetJobInfo(h$V0S67, DSJ.JOBSTATUS)
+   job$V0S67$userstatus = DSGetJobInfo(h$V0S67, DSJ.USERSTATUS)
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0063\\%1 (JOB %2) finished, status=%3[E]", "P164_ARXL_Report_CreateDataSet_PJD_LD2":@FM:jb$V0S67:@FM:job$V0S67$status))
+   IdV0S67%%Result2%%16 = job$V0S67$userstatus
+   IdV0S67%%Result1%%17 = job$V0S67$status
+   IdV0S67%%Name%%18 = jb$V0S67
+   If (job$V0S67$status <> DSJS.RUNOK) Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0030\\Job %1 did not finish OK, status = '%2'", jb$V0S67:@FM:DSTranslateCode(job$V0S67$status)), "@P164_ARXL_Report_CreateDataSet_PJD_LD2")
+   End
+   rpt$V0S67 = DSMakeJobReport(h$V0S67, 1, "CRLF")
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0004\\Report on job: %1<L>%2", jb$V0S67:@FM:rpt$V0S67), "@P164_ARXL_Report_CreateDataSet_PJD_LD2")
+   dummy$ = DSDetachJob(h$V0S67)
+   If b$InErrorRef$V0S67 Or (job$V0S67$status <> DSJS.RUNOK And job$V0S67$status <> DSJS.RUNWARN) Then Goto L$V0S67$SKIPPED
+   cp$value = Lower(job$V0S67$status)
+   cp$value<2> = Lower(job$V0S67$userstatus)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, h$V0S67$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0025\\Checkpointed run of job '%1'", jb$V0S67), "@P164_ARXL_Report_CreateDataSet_PJD_LD2")
+**************************************************
+L$V0S67$SKIPPED:
+   If b$Abandoning Then GoTo L$WAITFORJOB
+   If (job$V0S67$status <> DSJS.RUNOK And job$V0S67$status <> DSJS.RUNWARN) Then GoSub L$V20S0$START
+   If (IdV0S67%%Result1%%17=1 OR IdV0S67%%Result1%%17=2) Then GoSub L$V0S69$START
+   If b$V0S67skipping Then GoTo L$V0S0$RETURN$1
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S69$START:
+*** Sequencer "Seq_Create_Dataset": wait until inputs ready
+   seq$V0S69$status = 1
+   seq$V0S69$count += 1
+   If seq$V0S69$count < 2 Then Return
+   seq$V0S69$status = 2
+   GoTo L$V0S6$START
+L$V0S69$RETURN$1:
+   Return
+**************************************************
+L$V0S74$START:
+*** Activity "Exec_files_split_Arxl": Execute command
+   x$V0S74$cp = "x$V0S74"
+   If DSCheckPointGetValue(DSJ.ME, x$V0S74$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0023\\Skipped execution of command '%1' on restart", "sh"), "@Exec_files_split_Arxl")
+      x$V0S74 = Raise(cp$value<1>)
+      x$V0S74$output = Raise(cp$value<2>)
+      IdV0S74%%Result1%%19 = x$V0S74
+      IdV0S74%%Name%%20 = "sh"
+      IdV0S74%%Result2%%21 = x$V0S74$output
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0062\\%1 (COMMAND %2) skipped", "Exec_files_split_Arxl":@FM:"sh"))
+      Goto L$V0S74$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0059\\%1 (COMMAND %2) started", "Exec_files_split_Arxl":@FM:"sh"))
+   p$V0S74$1 = (PBM_BNP_GLOBAL.$pSCRIPT_DIR:"bnp_split_ARXL_ARXLP.sh ARXL.csv ":IdV25S0%%UserVar%%0)
+   x$cmd = "sh":" ":p$V0S74$1
+   x$type = (If System(91) = 1 Then "NT" Else "UNIX")
+   Call DSExecute(x$type, x$cmd, x$V0S74$output, x$V0S74)
+   x$masked$cmd = x$cmd
+   x$masked$output = x$V0S74$output
+   Call DSMaskExecArgs(x$masked$cmd, x$masked$output)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0007\\Executed: %1<L>Reply=%2<L>Output from command ====><L>%3", x$masked$cmd:@FM:x$V0S74:@FM:Lower(x$masked$output)), "@Exec_files_split_Arxl")
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0064\\%1 finished, reply=%2", "Exec_files_split_Arxl":@FM:x$V0S74))
+   IdV0S74%%Result1%%19 = x$V0S74
+   IdV0S74%%Name%%20 = "sh"
+   IdV0S74%%Result2%%21 = x$V0S74$output
+   If x$V0S74 <> 0 Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0043\\Command %1 did not finish OK, reply = '%2'", "sh":@FM:x$V0S74), "@Exec_files_split_Arxl")
+   End
+   If (x$V0S74 <> 0) Then
+      err$source = "Exec_files_split_Arxl"; err$number = 1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0044\\Unhandled failure (%1) encountered executing command %2", x$V0S74:@FM:"sh")
+      msg$id = "@Exec_files_split_Arxl"; GoTo L$ERROR
+   End
+   If b$InErrorRef Or (x$V0S74 <> 0) Then Goto L$V0S74$SKIPPED
+   cp$value = Lower(x$V0S74)
+   cp$value<2> = Lower(x$V0S74$output)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, x$V0S74$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0027\\Checkpointed execution of command '%1'", "sh"), "@Exec_files_split_Arxl")
+**************************************************
+L$V0S74$SKIPPED:
+   If (IdV0S74%%Result1%%19 =0) Then GoSub L$V0S79$START
+   GoTo L$V0S96$RETURN$4
+**************************************************
+L$V0S75$START:
+*** Activity "Exec_files_split_Arxlp": Execute command
+   x$V0S75$cp = "x$V0S75"
+   If DSCheckPointGetValue(DSJ.ME, x$V0S75$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0023\\Skipped execution of command '%1' on restart", "sh"), "@Exec_files_split_Arxlp")
+      x$V0S75 = Raise(cp$value<1>)
+      x$V0S75$output = Raise(cp$value<2>)
+      IdV0S75%%Result1%%22 = x$V0S75
+      IdV0S75%%Name%%23 = "sh"
+      IdV0S75%%Result2%%24 = x$V0S75$output
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0062\\%1 (COMMAND %2) skipped", "Exec_files_split_Arxlp":@FM:"sh"))
+      Goto L$V0S75$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0059\\%1 (COMMAND %2) started", "Exec_files_split_Arxlp":@FM:"sh"))
+   p$V0S75$1 = (PBM_BNP_GLOBAL.$pSCRIPT_DIR:"bnp_split_ARXL_ARXLP.sh ARXLP.csv ":IdV25S0%%UserVar%%0)
+   x$cmd = "sh":" ":p$V0S75$1
+   x$type = (If System(91) = 1 Then "NT" Else "UNIX")
+   Call DSExecute(x$type, x$cmd, x$V0S75$output, x$V0S75)
+   x$masked$cmd = x$cmd
+   x$masked$output = x$V0S75$output
+   Call DSMaskExecArgs(x$masked$cmd, x$masked$output)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0007\\Executed: %1<L>Reply=%2<L>Output from command ====><L>%3", x$masked$cmd:@FM:x$V0S75:@FM:Lower(x$masked$output)), "@Exec_files_split_Arxlp")
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0064\\%1 finished, reply=%2", "Exec_files_split_Arxlp":@FM:x$V0S75))
+   IdV0S75%%Result1%%22 = x$V0S75
+   IdV0S75%%Name%%23 = "sh"
+   IdV0S75%%Result2%%24 = x$V0S75$output
+   If x$V0S75 <> 0 Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0043\\Command %1 did not finish OK, reply = '%2'", "sh":@FM:x$V0S75), "@Exec_files_split_Arxlp")
+   End
+   If (x$V0S75 <> 0) Then
+      err$source = "Exec_files_split_Arxlp"; err$number = 1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0044\\Unhandled failure (%1) encountered executing command %2", x$V0S75:@FM:"sh")
+      msg$id = "@Exec_files_split_Arxlp"; GoTo L$ERROR
+   End
+   If b$InErrorRef Or (x$V0S75 <> 0) Then Goto L$V0S75$SKIPPED
+   cp$value = Lower(x$V0S75)
+   cp$value<2> = Lower(x$V0S75$output)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, x$V0S75$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0027\\Checkpointed execution of command '%1'", "sh"), "@Exec_files_split_Arxlp")
+**************************************************
+L$V0S75$SKIPPED:
+   If (IdV0S75%%Result1%%22 =0) Then GoSub L$V0S79$START
+   GoTo L$V0S96$RETURN$3
+**************************************************
+L$V0S76$START:
+*** Activity "Exec_files_split_Arxld": Execute command
+   x$V0S76$cp = "x$V0S76"
+   If DSCheckPointGetValue(DSJ.ME, x$V0S76$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0023\\Skipped execution of command '%1' on restart", "sh"), "@Exec_files_split_Arxld")
+      x$V0S76 = Raise(cp$value<1>)
+      x$V0S76$output = Raise(cp$value<2>)
+      IdV0S76%%Result1%%25 = x$V0S76
+      IdV0S76%%Name%%26 = "sh"
+      IdV0S76%%Result2%%27 = x$V0S76$output
+      summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0062\\%1 (COMMAND %2) skipped", "Exec_files_split_Arxld":@FM:"sh"))
+      Goto L$V0S76$SKIPPED
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0059\\%1 (COMMAND %2) started", "Exec_files_split_Arxld":@FM:"sh"))
+   p$V0S76$1 = (PBM_BNP_GLOBAL.$pSCRIPT_DIR:"bnp_split_ARXL_ARXLP.sh ARXLD.csv ":IdV25S0%%UserVar%%0)
+   x$cmd = "sh":" ":p$V0S76$1
+   x$type = (If System(91) = 1 Then "NT" Else "UNIX")
+   Call DSExecute(x$type, x$cmd, x$V0S76$output, x$V0S76)
+   x$masked$cmd = x$cmd
+   x$masked$output = x$V0S76$output
+   Call DSMaskExecArgs(x$masked$cmd, x$masked$output)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0007\\Executed: %1<L>Reply=%2<L>Output from command ====><L>%3", x$masked$cmd:@FM:x$V0S76:@FM:Lower(x$masked$output)), "@Exec_files_split_Arxld")
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0064\\%1 finished, reply=%2", "Exec_files_split_Arxld":@FM:x$V0S76))
+   IdV0S76%%Result1%%25 = x$V0S76
+   IdV0S76%%Name%%26 = "sh"
+   IdV0S76%%Result2%%27 = x$V0S76$output
+   If x$V0S76 <> 0 Then
+      Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0043\\Command %1 did not finish OK, reply = '%2'", "sh":@FM:x$V0S76), "@Exec_files_split_Arxld")
+   End
+   If (x$V0S76 <> 0) Then
+      err$source = "Exec_files_split_Arxld"; err$number = 1
+      msg$ = DSMakeMsg("DSTAGE_JSG_M_0044\\Unhandled failure (%1) encountered executing command %2", x$V0S76:@FM:"sh")
+      msg$id = "@Exec_files_split_Arxld"; GoTo L$ERROR
+   End
+   If b$InErrorRef Or (x$V0S76 <> 0) Then Goto L$V0S76$SKIPPED
+   cp$value = Lower(x$V0S76)
+   cp$value<2> = Lower(x$V0S76$output)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, x$V0S76$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0027\\Checkpointed execution of command '%1'", "sh"), "@Exec_files_split_Arxld")
+**************************************************
+L$V0S76$SKIPPED:
+   If (IdV0S76%%Result1%%25 =0) Then GoSub L$V0S79$START
+   GoTo L$V0S96$RETURN$2
+**************************************************
+L$V0S79$START:
+*** Sequencer "Seq_post_split_activities": wait until inputs ready
+   seq$V0S79$status = 1
+   seq$V0S79$count += 1
+   If seq$V0S79$count < 3 Then Return
+   seq$V0S79$status = 2
+   GoTo L$V23S2$START
+L$V0S79$RETURN$1:
+   Return
+**************************************************
+L$V0S96$START:
+*** Sequencer "Seq_pre_split": wait until inputs ready
+   seq$V0S96$status = 1
+   seq$V0S96$count += 1
+   If seq$V0S96$count < 1 Then Return
+   seq$V0S96$status = 2
+   GoTo L$V23S4$START
+L$V0S96$RETURN$1:
+   GoTo L$V0S76$START
+L$V0S96$RETURN$2:
+   GoTo L$V0S75$START
+L$V0S96$RETURN$3:
+   GoTo L$V0S74$START
+L$V0S96$RETURN$4:
+   Return
+**************************************************
+L$V25S0$START:
+*** Set user variables: "UserVariables_Activity_Sysdate"
+   IdV25S0%%UserVar%%0 = (DSJobStartDate[6, 2] : '-' : DSJobStartDate[9, 2] : '-' : DSJobStartDate[1, 4])
+   GoSub L$V0S96$START
+   GoTo L$V0S6$RETURN$1
+**************************************************
+L$WAITFORJOB:
+   If handle$list = "" Then GoTo L$FINISH
+   handle$ = DSWaitForJob(handle$list)
+   If handle$ = 0 Then handle$ = handle$list<1>
+   Locate handle$ In handle$list Setting index$ Then
+      id$ = id$list<index$>
+      Del id$list<index$>; Del handle$list<index$>
+      b$Abandoning = abort$list<index$>; Del abort$list<index$>
+      Begin Case
+      Case id$ = "V0S0"
+         GoTo L$V0S0$FINISHED
+      Case id$ = "V0S3"
+         GoTo L$V0S3$FINISHED
+      Case id$ = "V0S6"
+         GoTo L$V0S6$FINISHED
+      Case id$ = "V23S4"
+         GoTo L$V23S4$FINISHED
+      Case id$ = "V0S67"
+         GoTo L$V0S67$FINISHED
+      End Case
+   End
+* Error if fall though
+   handle$list = ""
+   err$source = "@Coordinator"; err$number = -1
+   msg$ = DSMakeMsg("DSTAGE_JSG_M_0008\\Error calling DSWaitForJob(), code=%1[E]", handle$)
+   msg$id = "@Coordinator"; GoTo L$ERROR
+**************************************************
+L$ERROR:
+   Call DSLogWarn(DSMakeMsg("DSTAGE_JSG_M_0009\\Controller problem: %1", msg$), msg$id)
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0052\\Exception raised: %1", msg$id:", ":msg$))
+   If Not(b$InErrorRef) Then
+      dummy$ = DSCheckPointSetValue(DSJ.ME, "!", DSMakeMsg("DSTAGE_JSG_M_0031\\Failed at: %1, Reason=%2", err$source:@FM:msg$))
+   End
+   abort$list = Ifs(handle$list, Str(1:@FM, DCount(handle$list, @FM)), "")
+   b$Abandoning = @True
+   GoTo L$WAITFORJOB
+L$ABORT:
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0055\\Sequence failed (restartable)", ""))
+   x$masked$summary = summary$
+   Call DSMaskExecArgs(x$masked$summary, '')
+   Call DSLogInfo(x$masked$summary, "@Coordinator")
+   Call DSLogFatal(DSMakeMsg("DSTAGE_JSG_M_0014\\Sequence job (restartable) will abort due to previous unrecoverable errors", ""), "@Coordinator")
+**************************************************
+L$FINISH:
+   If b$Abandoning Then GoTo L$ABORT
+*** At successful exit remove checkpoint record
+   If Not(b$InErrorRef) And DSCheckPointExists(DSJ.ME, cp$dtm) Then
+      dummy$ = DSCheckPointDelete(DSJ.ME)
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0018\\Removed checkpoint record at successful completion of sequence", ""), "@Coordinator")
+   End
+   If (seq$V20S0$status = 1) Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0072\\Note: Sequencer '%1' was entered, but never exited", "SEQ_Failure"), "@Coordinator")
+   End
+   If (seq$V0S69$status = 1) Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0072\\Note: Sequencer '%1' was entered, but never exited", "Seq_Create_Dataset"), "@Coordinator")
+   End
+   If (seq$V0S79$status = 1) Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0072\\Note: Sequencer '%1' was entered, but never exited", "Seq_post_split_activities"), "@Coordinator")
+   End
+   If (seq$V0S96$status = 1) Then
+      Call DSLogInfo(DSMakeMsg("DSTAGE_JSG_M_0072\\Note: Sequencer '%1' was entered, but never exited", "Seq_pre_split"), "@Coordinator")
+   End
+   summary$<1,-1> = Time$$:Convert(@VM, " ", DSMakeMsg("DSTAGE_JSG_M_0054\\Sequence finished OK", ""))
+   x$masked$summary = summary$
+   Call DSMaskExecArgs(x$masked$summary, '')
+   Call DSLogInfo(x$masked$summary, "@Coordinator")
+   L$EXIT: Return To L$EXIT
+ 
+
+=+=+=+=
+      ControlAfterSubr "0"
+      Parameters "CParameters"
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_DAILY"
+         Prompt "PBM_BNP_DAILY parameters"
+         Default "(As pre-defined)"
+         ParamType "13"
+         ParamLength "0"
+         ParamScale "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_GLOBAL"
+         Prompt "PBM_BNP_GLOBAL parameters"
+         Default "(As pre-defined)"
+         ParamType "13"
+         ParamLength "0"
+         ParamScale "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "pLAST_RUN_DT"
+         Prompt "pLAST_RUN_DT"
+         ParamType "0"
+         ParamLength "0"
+         ParamScale "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "pDS_USERID"
+         Prompt "pDS_USERID"
+         ParamType "0"
+         ParamLength "0"
+         ParamScale "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "pJOB_STATUS_ID"
+         Prompt "pJOB_STATUS_ID"
+         ParamType "0"
+         ParamLength "0"
+         ParamScale "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "pBATCH_NBR"
+         Prompt "pBATCH_NBR"
+         ParamType "0"
+         ParamLength "0"
+         ParamScale "0"
+      END DSSUBRECORD
+      MetaBag "CMetaProperty"
+      BEGIN DSSUBRECORD
+         Owner "APT"
+         Name "AdvancedRuntimeOptions"
+         Value "#DSProjectARTOptions#"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Owner "APT"
+         Name "SequenceUseGridProperties"
+         Value "0"
+      END DSSUBRECORD
+      NULLIndicatorPosition "0"
+      Dependencies "CJobDepend"
+      BEGIN DSSUBRECORD
+         Name "P164_ARXL_Report_PJD_EXTR"
+         Type "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "P164_ARXL_Report_CreateDataSet_PJD_LD"
+         Type "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "P164_ARXL_Report_PJD_LD"
+         Type "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "P164_ARXL_Report_PJD_Recon"
+         Type "0"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "P164_ARXL_Report_CreateDataSet_PJD_LD2"
+         Type "0"
+      END DSSUBRECORD
+      IsTemplate "0"
+      NLSLocale ",,,,"
+      JobType "2"
+      Category "\\Jobs\\EXTERNAL\\ARXL"
+      CenturyBreakYear "30"
+      NextAliasID "2"
+      ParameterFileDDName "DD00001"
+      ReservedWordCheck "1"
+      TransactionSize "0"
+      ValidationStatus "0"
+      Uploadable "0"
+      PgmCustomizationFlag "0"
+      JobReportFlag "0"
+      AllowMultipleInvocations "0"
+      JobSeqCodeGenOpts "logjoberrors,logjobreports,handleaborts,checkpoints"
+      Act2ActOverideDefaults "0"
+      Act2ActEnableRowBuffer "0"
+      Act2ActUseIPC "0"
+      Act2ActBufferSize "0"
+      Act2ActIPCTimeout "0"
+      ExpressionSemanticCheckFlag "0"
+      TraceOption "0"
+      EnableCacheSharing "0"
+      RuntimeColumnPropagation "0"
+      RelStagesInJobStatus "-1"
+      WebServiceEnabled "0"
+      MFProcessMetaData "0"
+      MFProcessMetaDataXMLFileExchangeMethod "0"
+      IMSProgType "0"
+      CopyLibPrefix "ARDT"
+      RecordPerformanceResults "0"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0"
+      OLEType "CContainerView"
+      Readonly "0"
+      Name "Job"
+      NextID "1"
+      IsTopLevel "0"
+      StageList "V0S0|V0S3|V0S6|V0S21|V20S0|V21A0|V21A1|V21A2|V23S2|V23S4|V0S67|V0S69|V0S74|V0S75|V0S76|V0S79|V0S96|V25S0"
+      StageXPos "192|384|792|744|504|568|1066|569|1392|1152|408|552|1296|1488|1392|1392|1152|1008"
+      StageYPos "432|312|408|1104|864|8|7|111|864|576|528|408|480|456|288|648|408|408"
+      StageTypes "CJSJobActivity|CJSJobActivity|CJSJobActivity|CJSTerminatorActivity|CJSSequencer|ID_PALETTEANNOTATION|ID_PALETTEANNOTATION|ID_PALETTEANNOTATION|CJSExecCmdActivity|CJSJobActivity|CJSJobActivity|CJSSequencer|CJSExecCmdActivity|CJSExecCmdActivity|CJSExecCmdActivity|CJSSequencer|CJSSequencer|CJSUserVarsActivity"
+      NextStageID "101"
+      SnapToGrid "1"
+      GridLines "0"
+      ZoomValue "90"
+      StageXSize "48|48|48|48|526|498|378|496|48|48|48|48|48|48|48|48|48|48"
+      StageYSize "48|48|48|48|54|101|221|118|48|48|48|48|48|48|48|48|48|48"
+      ContainerViewSizing "0044 0044 0660 0617 0000 0001 0000 0000"
+      StageNames "P164_ARXL_Report_PJD_EXTR|P164_ARXL_Report_CreateDataSet_PJD_LD|P164_ARXL_Report_PJD_LD|Terminate_Activity|SEQ_Failure| | | |file_post_split_activities|P164_ARXL_Report_PJD_Recon|P164_ARXL_Report_CreateDataSet_PJD_LD2|Seq_Create_Dataset|Exec_files_split_Arxl|Exec_files_split_Arxlp|Exec_files_split_Arxld|Seq_post_split_activities|Seq_pre_split|UserVariables_Activity_Sysdate"
+      StageTypeIDs "CJobActivity|CJobActivity|CJobActivity|CTerminatorActivity|CSequencer| | | |CExecCommandActivity|CJobActivity|CJobActivity|CSequencer|CExecCommandActivity|CExecCommandActivity|CExecCommandActivity|CSequencer|CSequencer|CUserVarsActivity"
+      LinkNames "lnk_P164_ARXL_Report_PJD_EXTR_Success,lnk_P164_ARXL_Report_PJD_EXTR_Failure,lnk_P164_ARXL_Report_PJD_EXTR2_Success|lnk_P164_ARXL_Report_CreateDataSet_PJD_LD_Failure,lnk_P164_create_Dataset|P164_ARXL_Report_PJD_LD_Failure,lnk_P164_ARXL_Recon| |lnk_Seq_Failure| | | |lnk_file_post_split_activities_failure|lnk_P164_ARXL_Report_PJD_Recon_failure|lnk_P164_create_Dataset1,lnk_P164_ARXL_Report_CreateDataSet_PJD_LD2_Failure|success|lnk_Arxl_Success|lnk_Arxlp_Success|lnk_Arxld_Success|lnk_to_Exec_post_split_activities|split_arxl,split_arxlp,split_arxld,recon|lnk_sysdate"
+      LinkHasMetaDatas "False,False,False|False,False|False,False| |False| | | |False|False|False,False|False|False|False|False|False|False,False,False,False|False"
+      LinkTypes "1,1,1|1,1|1,1| |1| | | |1|1|1,1|1|1|1|1|1|1,1,1,1|1"
+      LinkNamePositionXs "283,392,234|499,494|821,873| |767| | | |1168|1140|485,466|649|1371|1488|1416|1416|1221,1240,1259,1176|1075"
+      LinkNamePositionYs "412,729,516|632,364|553,432| |1036| | | |889|667|498,676|432|589|570|554|820|445,423,384,562|432"
+      TargetStageIDs "V0S3,V20S0,V0S67|V20S0,V0S69|V20S0,V25S0| |V0S21| | | |V20S0|V20S0|V0S69,V20S0|V0S6|V0S79|V0S79|V0S79|V23S2|V0S74,V0S75,V0S76,V23S4|V0S96"
+      SourceStageEffectiveExecutionModes "0,0,0|0,0|0,0| |0| | | |0|0|0,0|0|0|0|0|0|0,0,0,0|0"
+      SourceStageRuntimeExecutionModes "0,0,0|0,0|0,0| |0| | | |0|0|0,0|0|0|0|0|0|0,0,0,0|0"
+      TargetStageEffectiveExecutionModes "0,0,0|0,0|0,0| |0| | | |0|0|0,0|0|0|0|0|0|0,0,0,0|0"
+      TargetStageRuntimeExecutionModes "0,0,0|0,0|0,0| |0| | | |0|0|0,0|0|0|0|0|0|0,0,0,0|0"
+      LinkIsSingleOperatorLookup "False,False,False|False,False|False,False| |False| | | |False|False|False,False|False|False|False|False|False|False,False,False,False|False"
+      LinkIsSortSequential "False,False,False|False,False|False,False| |False| | | |False|False|False,False|False|False|False|False|False|False,False,False,False|False"
+      LinkSortMode "0,0,0|0,0|0,0| |0| | | |0|0|0,0|0|0|0|0|0|0,0,0,0|0"
+      LinkPartColMode "0,0,0|0,0|0,0| |0| | | |0|0|0,0|0|0|0|0|0|0,0,0,0|0"
+      LinkSourcePinIDs "V0S0P1,V0S0P3,V0S0P4|V0S3P4,V0S3P5|V0S6P3,V0S6P17| |V20S0P20| | | |V23S2P3|V23S4P4|V0S67P2,V0S67P3|V0S69P3|V0S74P2|V0S75P2|V0S76P2|V0S79P4|V0S96P2,V0S96P3,V0S96P4,V0S96P5|V25S0P1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S0"
+      OLEType "CJSJobActivity"
+      Readonly "0"
+      Name "P164_ARXL_Report_PJD_EXTR"
+      NextID "5"
+      OutputPins "V0S0P1|V0S0P3|V0S0P4"
+      JobType "0"
+      ExecutionType "1"
+      Jobname "P164_ARXL_Report_PJD_EXTR"
+      ParameterValues "CParamValues"
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_GLOBAL"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "pJOB_STATUS_ID"
+         Description "pJOB_STATUS_ID"
+         ValueType "4"
+         DisplayValue "pJOB_STATUS_ID"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "pBATCH_NBR"
+         Description "pBATCH_NBR"
+         ValueType "4"
+         DisplayValue "pBATCH_NBR"
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "pLAST_RUN_DT"
+         Description "pLAST_RUN_DT"
+         ValueType "4"
+         DisplayValue "pLAST_RUN_DT"
+      END DSSUBRECORD
+      CheckPoint "0"
+      StageType "CJobActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S0P1"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_EXTR_Success"
+      Partner "V0S3|V0S3P1"
+      ConditionType "6"
+      TriggerExpression "P164_ARXL_Report_PJD_EXTR.$JobStatus=1 OR P164_ARXL_Report_PJD_EXTR.$JobStatus=2"
+      LeftTextPos "283"
+      TopTextPos "412"
+      SourceID "V0S0"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S0P3"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_EXTR_Failure"
+      Partner "V20S0|V20S0P16"
+      ConditionType "3"
+      TriggerExpression "\"Execution Failed\""
+      LeftTextPos "392"
+      TopTextPos "729"
+      SourceID "V0S0"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S0P4"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_EXTR2_Success"
+      Partner "V0S67|V0S67P1"
+      ConditionType "6"
+      TriggerExpression "P164_ARXL_Report_PJD_EXTR.$JobStatus=1 OR P164_ARXL_Report_PJD_EXTR.$JobStatus=2"
+      LeftTextPos "234"
+      TopTextPos "516"
+      SourceID "V0S0"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S21"
+      OLEType "CJSTerminatorActivity"
+      Readonly "0"
+      Name "Terminate_Activity"
+      NextID "5"
+      InputPins "V0S21P4"
+      TerminationType "0"
+      StageType "CTerminatorActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S21P4"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_Seq_Failure"
+      Partner "V20S0|V20S0P20"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S3"
+      OLEType "CJSJobActivity"
+      Readonly "0"
+      Name "P164_ARXL_Report_CreateDataSet_PJD_LD"
+      NextID "6"
+      InputPins "V0S3P1"
+      OutputPins "V0S3P4|V0S3P5"
+      JobType "0"
+      ExecutionType "1"
+      Jobname "P164_ARXL_Report_CreateDataSet_PJD_LD"
+      ParameterValues "CParamValues"
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_GLOBAL"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_DAILY"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      CheckPoint "0"
+      StageType "CJobActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S3P1"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_EXTR_Success"
+      Partner "V0S0|V0S0P1"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S3P4"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_CreateDataSet_PJD_LD_Failure"
+      Partner "V20S0|V20S0P17"
+      ConditionType "3"
+      TriggerExpression "\"Execution Failed\""
+      LeftTextPos "499"
+      TopTextPos "632"
+      SourceID "V0S3"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S3P5"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_create_Dataset"
+      Partner "V0S69|V0S69P1"
+      ConditionType "6"
+      TriggerExpression "P164_ARXL_Report_CreateDataSet_PJD_LD.$JobStatus=1 OR P164_ARXL_Report_CreateDataSet_PJD_LD.$JobStatus=2"
+      LeftTextPos "494"
+      TopTextPos "364"
+      SourceID "V0S3"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S6"
+      OLEType "CJSJobActivity"
+      Readonly "0"
+      Name "P164_ARXL_Report_PJD_LD"
+      NextID "18"
+      InputPins "V0S6P1"
+      OutputPins "V0S6P3|V0S6P17"
+      JobType "0"
+      ExecutionType "1"
+      Jobname "P164_ARXL_Report_PJD_LD"
+      ParameterValues "CParamValues"
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_GLOBAL"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_DAILY"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "cttym"
+         Description "DSJobStartDate[1,4]:DSJobStartDate[6,2]:DSJobStartDate[9,2]:DSJobStartTime[1,2]:DSJobStartTime[4,2]:DSJobStartTime[7,2] "
+         ValueType "4"
+         DisplayValue "DSJobStartDate[1,4]:DSJobStartDate[6,2]:DSJobStartDate[9,2]:DSJobStartTime[1,2]:DSJobStartTime[4,2]:DSJobStartTime[7,2] "
+      END DSSUBRECORD
+      CheckPoint "0"
+      StageType "CJobActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S67"
+      OLEType "CJSJobActivity"
+      Readonly "0"
+      Name "P164_ARXL_Report_CreateDataSet_PJD_LD2"
+      NextID "4"
+      InputPins "V0S67P1"
+      OutputPins "V0S67P2|V0S67P3"
+      JobType "0"
+      ExecutionType "1"
+      Jobname "P164_ARXL_Report_CreateDataSet_PJD_LD2"
+      ParameterValues "CParamValues"
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_GLOBAL"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_DAILY"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      CheckPoint "0"
+      StageType "CJobActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S67P1"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_EXTR2_Success"
+      Partner "V0S0|V0S0P4"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S67P2"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_create_Dataset1"
+      Partner "V0S69|V0S69P2"
+      ConditionType "6"
+      TriggerExpression "P164_ARXL_Report_CreateDataSet_PJD_LD2.$JobStatus=1 OR P164_ARXL_Report_CreateDataSet_PJD_LD2.$JobStatus=2"
+      LeftTextPos "485"
+      TopTextPos "498"
+      SourceID "V0S67"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S67P3"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_CreateDataSet_PJD_LD2_Failure"
+      Partner "V20S0|V20S0P31"
+      ConditionType "3"
+      TriggerExpression "\"Execution Failed\""
+      LeftTextPos "466"
+      TopTextPos "676"
+      SourceID "V0S67"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S69"
+      OLEType "CJSSequencer"
+      Readonly "0"
+      Name "Seq_Create_Dataset"
+      NextID "4"
+      InputPins "V0S69P1|V0S69P2"
+      OutputPins "V0S69P3"
+      SequencerType "0"
+      StageType "CSequencer"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S69P1"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_create_Dataset"
+      Partner "V0S3|V0S3P5"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S69P2"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_create_Dataset1"
+      Partner "V0S67|V0S67P2"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S69P3"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "success"
+      Partner "V0S6|V0S6P1"
+      ConditionType "0"
+      LeftTextPos "649"
+      TopTextPos "432"
+      SourceID "V0S3"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S6P1"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "success"
+      Partner "V0S69|V0S69P3"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S6P17"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Recon"
+      Partner "V25S0|V25S0P2"
+      ConditionType "6"
+      TriggerExpression "P164_ARXL_Report_PJD_LD.$JobStatus=1 Or P164_ARXL_Report_PJD_LD.$JobStatus=2 "
+      LeftTextPos "873"
+      TopTextPos "432"
+      SourceID "V0S64"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S6P3"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "P164_ARXL_Report_PJD_LD_Failure"
+      Partner "V20S0|V20S0P18"
+      ConditionType "3"
+      TriggerExpression "\"Execution Failed\""
+      LeftTextPos "821"
+      TopTextPos "553"
+      SourceID "V0S6"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S74"
+      OLEType "CJSExecCmdActivity"
+      Readonly "0"
+      Name "Exec_files_split_Arxl"
+      NextID "4"
+      InputPins "V0S74P3"
+      OutputPins "V0S74P2"
+      CmdType "0"
+      Path "sh"
+      Parameters "#PBM_BNP_GLOBAL.$pSCRIPT_DIR#bnp_split_ARXL_ARXLP.sh ARXL.csv #UserVariables_Activity_Sysdate.Current_date#"
+      CheckPoint "0"
+      StageType "CExecCommandActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S74P2"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_Arxl_Success"
+      Partner "V0S79|V0S79P1"
+      ConditionType "6"
+      TriggerExpression "Exec_files_split_Arxl.$ReturnValue =0"
+      LeftTextPos "1371"
+      TopTextPos "589"
+      SourceID "V0S74"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S74P3"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "split_arxl"
+      Partner "V0S96|V0S96P2"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S75"
+      OLEType "CJSExecCmdActivity"
+      Readonly "0"
+      Name "Exec_files_split_Arxlp"
+      NextID "4"
+      InputPins "V0S75P3"
+      OutputPins "V0S75P2"
+      CmdType "0"
+      Path "sh"
+      Parameters "#PBM_BNP_GLOBAL.$pSCRIPT_DIR#bnp_split_ARXL_ARXLP.sh ARXLP.csv #UserVariables_Activity_Sysdate.Current_date#"
+      CheckPoint "0"
+      StageType "CExecCommandActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S75P2"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_Arxlp_Success"
+      Partner "V0S79|V0S79P2"
+      ConditionType "6"
+      TriggerExpression "Exec_files_split_Arxlp.$ReturnValue =0"
+      LeftTextPos "1488"
+      TopTextPos "570"
+      SourceID "V0S75"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S75P3"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "split_arxlp"
+      Partner "V0S96|V0S96P3"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S76"
+      OLEType "CJSExecCmdActivity"
+      Readonly "0"
+      Name "Exec_files_split_Arxld"
+      NextID "4"
+      InputPins "V0S76P3"
+      OutputPins "V0S76P2"
+      CmdType "0"
+      Path "sh"
+      Parameters "#PBM_BNP_GLOBAL.$pSCRIPT_DIR#bnp_split_ARXL_ARXLP.sh ARXLD.csv #UserVariables_Activity_Sysdate.Current_date#"
+      CheckPoint "0"
+      StageType "CExecCommandActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S76P2"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_Arxld_Success"
+      Partner "V0S79|V0S79P3"
+      ConditionType "6"
+      TriggerExpression "Exec_files_split_Arxld.$ReturnValue =0"
+      LeftTextPos "1416"
+      TopTextPos "554"
+      SourceID "V0S76"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S76P3"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "split_arxld"
+      Partner "V0S96|V0S96P4"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S79"
+      OLEType "CJSSequencer"
+      Readonly "0"
+      Name "Seq_post_split_activities"
+      NextID "5"
+      InputPins "V0S79P1|V0S79P2|V0S79P3"
+      OutputPins "V0S79P4"
+      SequencerType "0"
+      StageType "CSequencer"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S79P1"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_Arxl_Success"
+      Partner "V0S74|V0S74P2"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S79P2"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_Arxlp_Success"
+      Partner "V0S75|V0S75P2"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S79P3"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_Arxld_Success"
+      Partner "V0S76|V0S76P2"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S79P4"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_to_Exec_post_split_activities"
+      Partner "V23S2|V23S2P4"
+      ConditionType "0"
+      LeftTextPos "1416"
+      TopTextPos "820"
+      SourceID "V0S79"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S96"
+      OLEType "CJSSequencer"
+      Readonly "0"
+      Name "Seq_pre_split"
+      NextID "7"
+      InputPins "V0S96P6"
+      OutputPins "V0S96P2|V0S96P3|V0S96P4|V0S96P5"
+      SequencerType "0"
+      StageType "CSequencer"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S96P2"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "split_arxl"
+      Partner "V0S74|V0S74P3"
+      ConditionType "0"
+      LeftTextPos "1221"
+      TopTextPos "445"
+      SourceID "V0S96"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S96P3"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "split_arxlp"
+      Partner "V0S75|V0S75P3"
+      ConditionType "0"
+      LeftTextPos "1240"
+      TopTextPos "423"
+      SourceID "V0S96"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S96P4"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "split_arxld"
+      Partner "V0S76|V0S76P3"
+      ConditionType "0"
+      LeftTextPos "1259"
+      TopTextPos "384"
+      SourceID "V0S96"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S96P5"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "recon"
+      Partner "V23S4|V23S4P6"
+      ConditionType "0"
+      LeftTextPos "1176"
+      TopTextPos "562"
+      SourceID "V0S96"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V0S96P6"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_sysdate"
+      Partner "V25S0|V25S0P1"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0"
+      OLEType "CJSSequencer"
+      Readonly "0"
+      Name "SEQ_Failure"
+      NextID "32"
+      InputPins "V20S0P16|V20S0P17|V20S0P18|V20S0P29|V20S0P30|V20S0P31"
+      OutputPins "V20S0P20"
+      SequencerType "1"
+      StageType "CSequencer"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0P16"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_EXTR_Failure"
+      Partner "V0S0|V0S0P3"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0P17"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_CreateDataSet_PJD_LD_Failure"
+      Partner "V0S3|V0S3P4"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0P18"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "P164_ARXL_Report_PJD_LD_Failure"
+      Partner "V0S6|V0S6P3"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0P20"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_Seq_Failure"
+      Partner "V0S21|V0S21P4"
+      ConditionType "0"
+      LeftTextPos "767"
+      TopTextPos "1036"
+      SourceID "V20S0"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0P29"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_Recon_failure"
+      Partner "V23S4|V23S4P4"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0P30"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_file_post_split_activities_failure"
+      Partner "V23S2|V23S2P3"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V20S0P31"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_CreateDataSet_PJD_LD2_Failure"
+      Partner "V0S67|V0S67P3"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V21A0"
+      OLEType "CAnnotation"
+      Readonly "0"
+      Name "V21A0"
+      NextID "0"
+      AnnotationType "0"
+      AnnotationText "This sequence executes the job for ARXL Report Generation."
+      TextFont "Tahoma\\10\\0\\0\\0\\400\\0"
+      TextHorizontalJustification "0"
+      TextVerticalJustification "0"
+      TextColor "0"
+      BackgroundColor "16777088"
+      BackgroundTransparent "0"
+      BorderVisible "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V21A1"
+      OLEType "CAnnotation"
+      Readonly "0"
+      Name "V21A1"
+      NextID "0"
+      AnnotationType "0"
+      AnnotationText =+=+=+=
+Full Description :This sequence executes the job for ARXL Report Generation.
+
+Program name : P164_ARXL_Report_PJD_SEQ_LD
+
+Project                   : PBM Billing and Payment
+
+Runtime Arguments :pJOB_STATUS_ID
+
+Frequency              : Weekly
+
+=+=+=+=
+      TextFont "Tahoma\\10\\0\\0\\0\\400\\0"
+      TextHorizontalJustification "0"
+      TextVerticalJustification "0"
+      TextColor "0"
+      BackgroundColor "4227327"
+      BackgroundTransparent "0"
+      BorderVisible "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V21A2"
+      OLEType "CAnnotation"
+      Readonly "0"
+      Name "V21A2"
+      NextID "0"
+      AnnotationType "0"
+      AnnotationText =+=+=+=
+Modification LogOwner                                 |Date                    |ChangeLog
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - - - -  - - - - - - -
+
+
+TCS                                             |2013-06-17        |Initial Development
+GLX                                             |2017-03-21        |Files split optimization changes
+Rama Subhashini Prathipati           |2017-12-12 |Adding user activity stage to pass sysdate to scripts
+
+OGS                           |2017-12-18        |Changed Job Activity Parameter set value to 'As Predefined' as part of DS 11.5  Upgrade Project.
+=+=+=+=
+      TextFont "Tahoma\\10\\0\\0\\0\\400\\0"
+      TextHorizontalJustification "0"
+      TextVerticalJustification "0"
+      TextColor "0"
+      BackgroundColor "16744703"
+      BackgroundTransparent "0"
+      BorderVisible "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V23S2"
+      OLEType "CJSExecCmdActivity"
+      Readonly "0"
+      Name "file_post_split_activities"
+      NextID "5"
+      InputPins "V23S2P4"
+      OutputPins "V23S2P3"
+      CmdType "0"
+      Path "sh "
+      Parameters "#PBM_BNP_GLOBAL.$pSCRIPT_DIR#bnp_ARXL_post_split_activities.sh #UserVariables_Activity_Sysdate.Current_date#"
+      CheckPoint "0"
+      StageType "CExecCommandActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V23S2P3"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_file_post_split_activities_failure"
+      Partner "V20S0|V20S0P30"
+      ConditionType "3"
+      TriggerExpression "\"Execution Failed\""
+      LeftTextPos "1168"
+      TopTextPos "889"
+      SourceID "V23S2"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V23S2P4"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_to_Exec_post_split_activities"
+      Partner "V0S79|V0S79P4"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V23S4"
+      OLEType "CJSJobActivity"
+      Readonly "0"
+      Name "P164_ARXL_Report_PJD_Recon"
+      NextID "7"
+      InputPins "V23S4P6"
+      OutputPins "V23S4P4"
+      JobType "0"
+      ExecutionType "1"
+      Jobname "P164_ARXL_Report_PJD_Recon"
+      ParameterValues "CParamValues"
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_GLOBAL"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "PBM_BNP_DAILY"
+         Description "\"(As pre-defined)\""
+         ValueType "4"
+         DisplayValue "\"(As pre-defined)\""
+      END DSSUBRECORD
+      BEGIN DSSUBRECORD
+         Name "cttym"
+         Description "DSJobStartDate[1,4]:DSJobStartDate[6,2]:DSJobStartDate[9,2]:DSJobStartTime[1,2]:DSJobStartTime[4,2]:DSJobStartTime[7,2] "
+         ValueType "4"
+         DisplayValue "DSJobStartDate[1,4]:DSJobStartDate[6,2]:DSJobStartDate[9,2]:DSJobStartTime[1,2]:DSJobStartTime[4,2]:DSJobStartTime[7,2] "
+      END DSSUBRECORD
+      CheckPoint "0"
+      StageType "CJobActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V23S4P4"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Report_PJD_Recon_failure"
+      Partner "V20S0|V20S0P29"
+      ConditionType "3"
+      TriggerExpression "\"Execution Failed\""
+      LeftTextPos "1140"
+      TopTextPos "667"
+      SourceID "V0S68"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V23S4P6"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "recon"
+      Partner "V0S96|V0S96P5"
+      LinkType "1"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V25S0"
+      OLEType "CJSUserVarsActivity"
+      Readonly "0"
+      Name "UserVariables_Activity_Sysdate"
+      NextID "3"
+      InputPins "V25S0P2"
+      OutputPins "V25S0P1"
+      Variables "CParamValues"
+      BEGIN DSSUBRECORD
+         Name "Current_date"
+         Description "DSJobStartDate[6,2]:'-':DSJobStartDate[9,2]:'-':DSJobStartDate[1,4]"
+         ValueType "0"
+      END DSSUBRECORD
+      StageType "CUserVarsActivity"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V25S0P1"
+      OLEType "CJSActivityOutput"
+      Readonly "0"
+      Name "lnk_sysdate"
+      Partner "V0S96|V0S96P6"
+      ConditionType "0"
+      LeftTextPos "1075"
+      TopTextPos "432"
+      SourceID "V0S111"
+   END DSRECORD
+   BEGIN DSRECORD
+      Identifier "V25S0P2"
+      OLEType "CJSActivityInput"
+      Readonly "0"
+      Name "lnk_P164_ARXL_Recon"
+      Partner "V0S6|V0S6P17"
+      LinkType "1"
+   END DSRECORD
+END DSJOB
